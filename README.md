@@ -1,1 +1,5 @@
-# tehtavat24
+# ohjelmistotuotanto-palautusrepositorio
+
+https://github.com/jakubgrad/ohtuvarasto
+
+
