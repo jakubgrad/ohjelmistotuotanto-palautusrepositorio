@@ -6,33 +6,30 @@ def main():
     stats = StatisticsService(
       PlayerReader("https://studies.cs.helsinki.fi/nhlstats/2022-23/players.txt")
     )
-    #philadelphia_flyers_players = stats.team("PHI")
-    #top_scorers = stats.top(10)
+    
+     # järjestetään pisteiden perusteella, parametrina oleva 1 määrää järjestyksen
+    for player in stats.top(10, 1):
+        print(player)
 
-    #print("Philadelphia Flyers:")
-    #for player in philadelphia_flyers_players:
-        #print(player)
+    # järjestetään syöttöjen perusteella, parametrina oleva 3 määrää järjestyksen
+    print("Top by assists:")
+    for player in stats.top(10, 3):
+        print(player)
 
-# järjestetään kaikkien tehopisteiden eli maalit+syötöt perusteella
     print("Top point getters:")
     for player in stats.top(10, SortBy.POINTS):
         print(player)
     print("")
 
     # metodi toimii samalla tavalla kuin yo. kutsu myös ilman toista parametria
-    #for player in stats.top(10):
-        #print(player)
+    for player in stats.top(10):
+        print(player)
 
     # järjestetään maalien perusteella
     print("Top point goal scorers:")
     for player in stats.top(10, SortBy.GOALS):
         print(player)
     print("")
-
-    # järjestetään syöttöjen perusteella
-    print("Top by assists:")
-    for player in stats.top(10, SortBy.ASSISTS):
-        print(player)
 
 if __name__ == "__main__":
     main()
