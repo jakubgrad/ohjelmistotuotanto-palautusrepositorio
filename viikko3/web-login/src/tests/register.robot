@@ -5,6 +5,7 @@ Suite Teardown  Close Browser
 Test Setup      Reset Application Create User And Go To Register Page
 
 *** Test Cases ***
+
 Register With Valid Username And Password
     Set Username    john
     Set Password    Password123!
@@ -48,7 +49,35 @@ Register With Username That Is Already In Use
     Submit Registration
     Registration Should Fail With Message    Username is already taken
 
+Login After Successful Registration
+    Set Username    john
+    Set Password    Password123!
+    Set Password Confirmation    Password123!
+    Submit Registration
+    Click Link  Continue to main page
+    Submit Logout
+    Login Page Should Be Open
+    Set Username    john
+    Set Password    Password123!
+    Submit Login
+    Main Page Should Be Open
+
+Login After Failed Registration
+    Set Username    john123
+    Set Password    Password123!
+    Set Password Confirmation    Password123!
+    Submit Registration
+    Page Should Contain    Username can only contain lowercase letters (a-z)
+    Click Link  Login
+    Login Page Should Be Open
+    Set Username    john123
+    Set Password    Password123!
+    Submit Login
+    Login Page Should Be Open
+    Page Should Contain   Invalid username or password
+
 *** Keywords ***
+
 Set Username
     [Arguments]    ${username}
     Input Text    username    ${username}
@@ -64,6 +93,12 @@ Set Password Confirmation
 Submit Registration
     Click Button    Register
 
+Submit Login
+    Click Button    Login
+
+Submit Logout
+    Click Button    Logout
+
 Registration Should Succeed
     Welcome Page Should Be Open
 
@@ -74,6 +109,12 @@ Registration Should Fail With Message
 
 Welcome Page Should Be Open
     Title Should Be    Welcome to Ohtu Application!
+
+Main Page Should Be Open
+    Title Should Be    Ohtu Application main page
+
+Login Page Should Be Open
+    Title Should Be    Login
 
 Reset Application Create User And Go To Register Page
     Reset Application
