@@ -41,6 +41,10 @@ class TestKauppa(unittest.TestCase):
         pankki_mock.tilisiirto.assert_called()
         # toistaiseksi ei välitetä kutsuun liittyvistä argumenteista
 
+    #Let's start the transaction, add a product that is in stock to the basket and make the purchase, i.e. 
+    #call the method of purchase tilimaksu, make sure that the bank's method is called tilisiirtowith the 
+    #correct customer, account numbers and amount. This is otherwise a copypaste from the example, but 
+    #assert_called_withthe -method should be used in order to check that the parameters have the correct values
     def test_tilisiirto_is_called_with_the_correct_customer_account_numbers_and_amount(self):
             pankki_mock = Mock()
             viitegeneraattori_mock = Mock()
@@ -78,3 +82,43 @@ class TestKauppa(unittest.TestCase):
             
 
 
+    #Let's start the transaction, add two different products that are in stock to the basket and make the purchase, 
+    #make sure that the bank's method is called tilisiirtowith the correct customer, account number and amount
+    def test_tilisiirto_is_called_with_the_correct_customer_account_numbers_and_amount_for_two_different_products(self):
+            pankki_mock = Mock()
+            viitegeneraattori_mock = Mock()
+
+            # palautetaan aina arvo 42
+            viitegeneraattori_mock.uusi.return_value = 42
+
+            varasto_mock = Mock()
+
+            # tehdään toteutus saldo-metodille
+            def varasto_saldo(tuote_id):
+                if tuote_id == 1:
+                    return 10
+                if tuote_id == 2:
+                    return 20
+
+            # tehdään toteutus hae_tuote-metodille
+            def varasto_hae_tuote(tuote_id):
+                if tuote_id == 1:
+                    return Tuote(1, "maito", 5)
+                if tuote_id == 2:
+                    return Tuote(2, "cream", 3)
+
+            # otetaan toteutukset käyttöön
+            varasto_mock.saldo.side_effect = varasto_saldo
+            varasto_mock.hae_tuote.side_effect = varasto_hae_tuote
+
+            # alustetaan kauppa
+            kauppa = Kauppa(varasto_mock, pankki_mock, viitegeneraattori_mock)
+
+            # tehdään ostokset
+            kauppa.aloita_asiointi()
+            kauppa.lisaa_koriin(1)
+            kauppa.lisaa_koriin(2)
+            kauppa.tilimaksu("pekka", "12345")
+
+            # varmistetaan, että metodia tilisiirto on kutsuttu with correct arguments
+            pankki_mock.tilisiirto.assert_called_with("pekka", 42, "12345", "33333-44455", 8)
