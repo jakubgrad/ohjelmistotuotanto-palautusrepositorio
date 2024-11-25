@@ -288,3 +288,39 @@ class TestKauppa(unittest.TestCase):
         kauppa.lisaa_koriin(1)
         kauppa.tilimaksu("pekka", "12345")
         pankki_mock.tilisiirto.assert_called_with("pekka", 3, "12345", "33333-44455", 10)
+
+    def test_an_item_can_be_put_in_a_basket_and_then_returned(self):
+        pankki_mock = Mock()
+        viitegeneraattori_mock = Mock()
+
+        # palautetaan aina arvo 42
+        viitegeneraattori_mock.uusi.return_value = 42
+
+        varasto_mock = Mock()
+
+        # tehdään toteutus saldo-metodille
+        def varasto_saldo(tuote_id):
+            if tuote_id == 1:
+                return 10
+
+        # tehdään toteutus hae_tuote-metodille
+        def varasto_hae_tuote(tuote_id):
+            if tuote_id == 1:
+                return Tuote(1, "maito", 5)
+
+        # otetaan toteutukset käyttöön
+        varasto_mock.saldo.side_effect = varasto_saldo
+        varasto_mock.hae_tuote.side_effect = varasto_hae_tuote
+
+        # alustetaan kauppa
+        kauppa = Kauppa(varasto_mock, pankki_mock, viitegeneraattori_mock)
+
+        # tehdään ostokset for the first time
+        kauppa.aloita_asiointi()
+        kauppa.lisaa_koriin(1)
+
+        self.assertEqual(kauppa._ostoskori.hinta(), 5)
+
+        kauppa.poista_korista(1)
+
+        self.assertEqual(kauppa._ostoskori.hinta(), 0)
