@@ -58,6 +58,4 @@ class UserService:
         if password != password_confirmation:
             raise UserInputError("Password and confirmation do not match")
 
-
-
 user_service = UserService()
