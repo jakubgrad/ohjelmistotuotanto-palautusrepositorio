@@ -1,3 +1,5 @@
+score_labels = {0:"Love", 1:"Fifteen", 2:"Thirty", 3:"Forty"}
+
 class Player:
     def __init__(self, name, score=0):
         self.name = name
@@ -19,46 +21,21 @@ class TennisGame:
         else:
             self.player2.score = self.player2.score + 1
 
+    def _get_even_score(self):
+        if self.player1.score <= 2:
+            return score_labels[self.player1.score] + "-All"
+        return "Deuce"
+
+    def _get_late_game_score(self):
+        leader = max([self.player1,self.player2], key=lambda player: player.score)
+        if abs(self.player1.score - self.player2.score)>=2:
+            return f"Win for {leader.name}" 
+        return f"Advantage {leader.name}"
 
     def get_score(self):
-        score = ""
-        temp_score = 0
-
         if self.player1.score == self.player2.score:
-            if self.player1.score == 0:
-                score = "Love-All"
-            elif self.player1.score == 1:
-                score = "Fifteen-All"
-            elif self.player1.score == 2:
-                score = "Thirty-All"
-            else:
-                score = "Deuce"
-        elif self.player1.score >= 4 or self.player2.score >= 4:
-            minus_result = self.player1.score - self.player2.score
-
-            if minus_result == 1:
-                score = "Advantage player1"
-            elif minus_result == -1:
-                score = "Advantage player2"
-            elif minus_result >= 2:
-                score = "Win for player1"
-            else:
-                score = "Win for player2"
-        else:
-            for i in range(1, 3):
-                if i == 1:
-                    temp_score = self.player1.score
-                else:
-                    score = score + "-"
-                    temp_score = self.player2.score
-
-                if temp_score == 0:
-                    score = score + "Love"
-                elif temp_score == 1:
-                    score = score + "Fifteen"
-                elif temp_score == 2:
-                    score = score + "Thirty"
-                elif temp_score == 3:
-                    score = score + "Forty"
-
-        return score
+            return self._get_even_score()
+        if self.player1.score >= 4 or self.player2.score >= 4:
+            return self._get_late_game_score()        
+        return score_labels[self.player1.score] + "-" + score_labels[self.player2.score]
+            
