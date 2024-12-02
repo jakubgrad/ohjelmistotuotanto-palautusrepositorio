@@ -1,6 +1,3 @@
-
-
-
 class IntJoukko:
     def _luo_lista(self, size):
         return [0] * size

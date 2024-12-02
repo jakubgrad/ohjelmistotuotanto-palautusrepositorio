@@ -1,5 +1,3 @@
-score_labels = {0:"Love", 1:"Fifteen", 2:"Thirty", 3:"Forty"}
-
 class Player:
     def __init__(self, name, score=0):
         self.name = name
@@ -14,6 +12,7 @@ class TennisGame:
         self.player2 = Player(player2_name)
         self.player1.score = 0
         self.player2.score = 0
+        self.score_labels = {0:"Love", 1:"Fifteen", 2:"Thirty", 3:"Forty"}
 
     def won_point(self, player_name):
         if player_name == self.player1.name:
@@ -23,7 +22,7 @@ class TennisGame:
 
     def _get_even_score(self):
         if self.player1.score <= 2:
-            return score_labels[self.player1.score] + "-All"
+            return self.score_labels[self.player1.score] + "-All"
         return "Deuce"
 
     def _get_late_game_score(self):
@@ -37,5 +36,5 @@ class TennisGame:
             return self._get_even_score()
         if self.player1.score >= 4 or self.player2.score >= 4:
             return self._get_late_game_score()        
-        return score_labels[self.player1.score] + "-" + score_labels[self.player2.score]
+        return self.score_labels[self.player1.score] + "-" + self.score_labels[self.player2.score]
             
