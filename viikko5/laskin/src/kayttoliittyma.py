@@ -1,18 +1,42 @@
 from enum import Enum
 from tkinter import ttk, constants, StringVar
 
-
 class Komento(Enum):
     SUMMA = 1
     EROTUS = 2
     NOLLAUS = 3
     KUMOA = 4
 
-
 class Kayttoliittyma:
     def __init__(self, sovelluslogiikka, root):
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
+        self.last_result = 0
+        self._komennot = {
+            Komento.SUMMA: self._summa,
+            Komento.EROTUS: self._erotus,
+            Komento.NOLLAUS: self._nollaus,
+            Komento.KUMOA: self._kumoa
+        }
+
+    def _summa(self, arvo):
+        self.last_result = self._sovelluslogiikka.arvo()
+        self._sovelluslogiikka.plus(arvo)
+        print(f"self.last_result: {self.last_result}, self._sovelluslogiikka.arvo(): {self._sovelluslogiikka.arvo()}")
+    
+    def _erotus(self, arvo):
+        self.last_result = self._sovelluslogiikka.arvo()
+        self._sovelluslogiikka.miinus(arvo)
+        print(f"self.last_result: {self.last_result}, self._sovelluslogiikka.arvo(): {self._sovelluslogiikka.arvo()}")
+    
+    def _nollaus(self):
+        self.last_result = self._sovelluslogiikka.arvo()
+        self._sovelluslogiikka.nollaa()
+        print(f"self.last_result: {self.last_result}, self._sovelluslogiikka.arvo(): {self._sovelluslogiikka.arvo()}")
+
+    def _kumoa(self):
+        self._sovelluslogiikka.aseta_arvo(self.last_result)
+        print(f"self.last_result: {self.last_result}, self._sovelluslogiikka.arvo(): {self._sovelluslogiikka.arvo()}")
 
     def kaynnista(self):
         self._arvo_var = StringVar()
@@ -61,15 +85,9 @@ class Kayttoliittyma:
             arvo = int(self._syote_kentta.get())
         except Exception:
             pass
-
-        if komento == Komento.SUMMA:
-            self._sovelluslogiikka.plus(arvo)
-        elif komento == Komento.EROTUS:
-            self._sovelluslogiikka.miinus(arvo)
-        elif komento == Komento.NOLLAUS:
-            self._sovelluslogiikka.nollaa()
-        elif komento == Komento.KUMOA:
-            pass
+        
+        if komento in self._komennot:
+            self._komennot[komento](arvo)
 
         self._kumoa_painike["state"] = constants.NORMAL
 
@@ -80,3 +98,4 @@ class Kayttoliittyma:
 
         self._syote_kentta.delete(0, constants.END)
         self._arvo_var.set(self._sovelluslogiikka.arvo())
+
